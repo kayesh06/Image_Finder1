@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Matcher</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        form { margin-bottom: 20px; }
+        #result-container {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-top: 20px;
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload an Image to Find a Match</h1>
+    <p>This application will find the best matching image from a Google Drive folder.</p>
+
+    <form id="upload-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="image" id="image-input" accept="image/*" required>
+        <button type="submit">Find Match</button>
+    </form>
+
+    <div id="result-container">
+        <h2>Results</h2>
+        <p id="match-status"></p>
+    </div>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const resultContainer = document.getElementById('result-container');
+        const statusText = document.getElementById('match-status');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevents the default form submission
+
+            const formData = new FormData(form);
+
+            statusText.textContent = "Processing... Please wait.";
+            resultContainer.style.display = 'block';
+
+            try {
+                const response = await fetch('/match-image/', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    statusText.innerHTML = `
+                        <strong>Best Match Found:</strong> ${data.match} <br>
+                        <strong>Score (lower is better):</strong> ${data.score}
+                    `;
+                } else {
+                    statusText.textContent = `Error: ${data.error}`;
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                statusText.textContent = `An error occurred: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

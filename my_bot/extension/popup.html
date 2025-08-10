@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Drive Image Matcher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 15px;
+      background: #f5f7fa;
+      color: #333;
+      width: 340px;
+    }
+
+    h3 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #444;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #4285F4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #3367d6;
+    }
+
+    input[type="file"],
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 10px;
+      display: block;
+    }
+
+    #result {
+      margin-top: 15px;
+      padding: 10px;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      font-size: 13px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .match {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+    }
+    .match:last-child {
+      border-bottom: none;
+    }
+    .match a {
+      display: block;
+      word-break: break-all;
+      font-size: 12px;
+      color: #4285F4;
+      text-decoration: none;
+    }
+    .match a:hover {
+      text-decoration: underline;
+    }
+
+    .loading {
+      text-align: center;
+      font-style: italic;
+      color: #777;
+    }
+
+    .small-note {
+      font-size: 12px;
+      color: #777;
+      text-align: center;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h3>🔍 Drive Image Matcher</h3>
+
+  <button id="loginBtn">Sign in with Google</button>
+  <p class="small-note">After login, return here to upload and match.</p>
+
+  <label for="folderId">Google Drive Folder ID or Link</label>
+  <input id="folderId" type="text" placeholder="Paste folder ID or link">
+
+  <label for="imageInput">Select Image</label>
+  <input id="imageInput" type="file" accept="image/*">
+
+  <button id="uploadBtn" style="margin-top:12px;background:#34A853;">Upload & Match</button>
+
+  <div id="result">No search yet.</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

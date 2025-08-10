@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Drive Image Matcher",
+  "version": "1.0",
+  "description": "Upload an image and find matches in your Google Drive folder.",
+  "permissions": ["identity"],
+  "host_permissions": [
+    "http://127.0.0.1:8000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon.png"
+    }
+  }
+}
