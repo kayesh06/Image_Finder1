@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const loginBtn = document.getElementById('loginBtn');
   const uploadBtn = document.getElementById('uploadBtn');
+  const historyBtn = document.getElementById('historyBtn'); // ✅ New history button
   const resultBox = document.getElementById('result');
   const folderInput = document.getElementById('folderId');
   const fileInput = document.getElementById('imageInput');
@@ -9,32 +10,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Utility: show message in results
   function showMessage(message, type = "info") {
-    resultBox.innerHTML = `<div class="${type} loading">${message}</div>`;
+    resultBox.innerHTML = `<div class="${type}">${message}</div>`;
   }
 
-  // Utility: show matches with simple fade-in effect
+  // Utility: show matches
   function showMatches(matches, total) {
-    let html = `<strong>${total} Matches Found:</strong><br>`;
-    matches.forEach((m, i) => {
+    let html = `<strong>${total} Matches Found:</strong><br><br>`;
+    matches.forEach((m) => {
       html += `
-        <div class="match" style="animation: fadeIn 0.3s ease ${i * 0.05}s forwards;opacity:0;">
-          🖼️ ${m.name} — <b>Score:</b> ${m.score}<br>
-          <a href="${m.link}" target="_blank">${m.link}</a>
+        <div style="margin-bottom:15px; padding:8px; border:1px solid #ccc; border-radius:8px; max-width:300px;">
+            <img src="${m.thumbnail || ''}" alt="${m.name}"
+                style="max-width:120px; border-radius:6px; display:block; margin-bottom:6px;" />
+            🖼️ <strong>${m.name}</strong><br>
+            🔢 Similarity Score: <strong>${m.score}</strong>
+            <br><a href="${m.link}" target="_blank">[🔗 View in Drive]</a>
         </div>
       `;
     });
     resultBox.innerHTML = html;
   }
-
-  // CSS animation for fade-in
-  const style = document.createElement('style');
-  style.innerHTML = `
-    @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-    .match { transform: translateY(10px); }
-    .error { color: #d93025; font-weight: bold; text-align: center; }
-    .info { color: #555; text-align: center; }
-  `;
-  document.head.appendChild(style);
 
   // Login with Google
   loginBtn.addEventListener('click', () => {
@@ -50,10 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
       showMessage("⚠️ Please choose an image file.", "error");
       return;
     }
-    if (!folderId) {
-      showMessage("⚠️ Please enter folder ID or link.", "error");
-      return;
-    }
 
     // Extract folder ID if full link is pasted
     const match = folderId.match(/\/folders\/([a-zA-Z0-9_-]+)/);
@@ -61,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fd = new FormData();
     fd.append('image', file);
-    fd.append('folder_id', folderId);
+    fd.append('folder_id', folderId); // can be empty now
 
     showMessage("⏳ Searching... please wait");
 
@@ -94,4 +84,29 @@ document.addEventListener('DOMContentLoaded', () => {
       showMessage("❌ Fetch error: " + e.message, "error");
     }
   });
+
+  // Fetch search history
+  if (historyBtn) {
+    historyBtn.addEventListener('click', async () => {
+      try {
+        const res = await fetch(`${API_HOST}/get-history/`, {
+          credentials: 'include'
+        });
+        const data = await res.json();
+
+        if (!data.history || data.history.length === 0) {
+          showMessage("📜 No search history found.", "info");
+          return;
+        }
+
+        let html = "<h3>📜 Search History:</h3>";
+        data.history.forEach((h, idx) => {
+          html += `<div><strong>${idx + 1}. ${h.query_file}</strong> (${h.matches.length} matches)</div>`;
+        });
+        resultBox.innerHTML = html;
+      } catch (e) {
+        showMessage("❌ Error loading history: " + e.message, "error");
+      }
+    });
+  }
 });
